@@ -8,6 +8,8 @@ Continuation visitor(cset_t *cset) {
 }
 
 int main(int argc, char **argv) {
-	walk(stdin, visitor);
+	GHashTable *inc = g_hash_table_new(g_str_hash, g_str_equal);
+	walk(stdin, visitor, inc);
+	g_hash_table_destroy(inc);
 	return 0;
 }

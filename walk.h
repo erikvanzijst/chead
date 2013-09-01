@@ -3,11 +3,12 @@
 
 #include <stdbool.h>
 #include <stdio.h>
+#include <glib.h>
 #include "cset.h"
 
 typedef enum { CONT, PRUNE } Continuation;
 
 //typedef continuation (*visit_cb)(struct CSET *cset);
-void walk(FILE *fp, Continuation (*)(cset_t *cset));
+void walk(FILE *fp, Continuation (*)(cset_t *cset), GHashTable *includes);
 
 #endif
