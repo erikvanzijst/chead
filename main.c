@@ -10,31 +10,46 @@ Continuation visitor(cset_t *cset) {
 	return CONT;
 }
 
-void parse_input(FILE *f, char **base, GHashTable *includes) {
+/*
+ * Parses the input header. The input header are all lines before the double
+ * newline.
+ * This function returns the number of SHAs that were read. Consequently, this
+ * number indicates the size of the pointer array that is pointed to by **shas.
+ */
+int parse_input(FILE *f, char ***shas) {
 	char line[1024];
+	GSList *slist = NULL, *el = NULL;
+	int i;
 
-	*base = NULL;
 	while(fgets(line, sizeof(line), f)) {
 		if(strlen(g_strchomp(line)) == 0) {
 			break;
 		} else if(line[0] == '#') {
 			continue;
 		}
-		if(*base == NULL) {
-			// first line is the base ref
-			*base = strdup(line);
-		}
-		g_hash_table_add(includes, strdup(line));
+		slist = g_slist_append(slist, strdup(line));
 	}
+	*shas = malloc(sizeof(char *) * g_slist_length(slist));
+	el = slist;
+	for (i = 0; el != NULL; el = g_slist_next(el)) {
+		(*shas)[i++] = (char *)el->data;
+	}
+	g_slist_free(slist);
+	return i;
 }
 
 int main(int argc, char **argv) {
 	GHashTable *inc = g_hash_table_new(g_str_hash, g_str_equal);
-	char *base;
+	char **shas;
+	int i = 4;
+	int cnt;
 
-	parse_input(stdin, &base, inc);
+	cnt = parse_input(stdin, &shas);
+	for (i = 0; i < cnt; i++) {
+		printf("%s\n", shas[i]);
+	}
 
-	walk(stdin, visitor, inc);
+	// walk(stdin, visitor, inc);
 	g_hash_table_destroy(inc);
 	return 0;
 }
