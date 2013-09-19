@@ -6,7 +6,7 @@
 #include "cset.h"
 
 typedef struct refcounter {
-	char *sha;
+	cset_t *cset;
 	GHashTable *nodes;
 	GHashTable *based;
 	int ahead;
@@ -15,12 +15,13 @@ typedef struct refcounter {
 
 /*
  * Allocates a new refcounter_t struct, including its internal hash tables.
+ * The supplied cset_t instance is deep-copied onto refcounter_t.cset.
  * The returned instance must be destroyed using `refcounter_t_destroy()`.
  */
-refcounter_t * refcounter_t_new(char *sha);
+refcounter_t * refcounter_t_new(cset_t *cset);
 
 /*
- * Frees the memory related to the supplied recounter_t struct.
+ * Frees the memory related to the supplied refcounter_t struct.
  */
 void refcounter_t_destroy(refcounter_t *refcounter);
 
