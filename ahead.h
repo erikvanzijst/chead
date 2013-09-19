@@ -6,23 +6,43 @@
 #include "cset.h"
 
 typedef struct refcounter {
-	cset_t *cset;
+	char *sha;
 	GHashTable *nodes;
 	GHashTable *based;
 	int ahead;
 	int behind;
 } refcounter_t;
 
+typedef struct aheadstate {
+	refcounter_t *base;
+	GSList *refcounters;
+} aheadstate_t;
+
 /*
  * Allocates a new refcounter_t struct, including its internal hash tables.
- * The supplied cset_t instance is deep-copied onto refcounter_t.cset.
+ * The supplied sha string is deep-copied onto refcounter_t.sha.
  * The returned instance must be destroyed using `refcounter_t_destroy()`.
  */
-refcounter_t * refcounter_t_new(cset_t *cset);
+refcounter_t * refcounter_t_new(char *sha);
 
 /*
  * Frees the memory related to the supplied refcounter_t struct.
  */
 void refcounter_t_destroy(refcounter_t *refcounter);
+
+/*
+ * Allocates a new aheadstate_t instance, initialized with ref counters for
+ * the specified shas.
+ * Note that the first sha in the list is the base ref against which the ahead
+ * and behind count of the others are calculated.
+ *
+ * The returned instance must be freed using aheadstate_destroy().
+ */
+aheadstate_t * aheadstate_new(char **shas, int num_shas);
+
+/*
+ * Frees the memory related to the specified aheadstate_t instance.
+ */
+void aheadstate_destroy(aheadstate_t *state);
 
 #endif /* AHEAD_H */
