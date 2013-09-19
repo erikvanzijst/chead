@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <glib.h>
+#include "ahead.h"
 #include "cset.h"
 
 typedef enum { CONT, PRUNE } Continuation;

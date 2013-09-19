@@ -33,7 +33,8 @@ aheadstate_t * aheadstate_new(char **shas, int num_shas) {
 	state->base = refcounter_t_new(shas[0]);
 	state->refcounters = NULL;
 	for (i = 1; i < num_shas; i++) {
-		state->refcounters = g_slist_append(state->refcounters, shas[i]);
+		state->refcounters = g_slist_append(state->refcounters,
+		                                    refcounter_t_new(shas[i]));
 	}
 	return state;
 }

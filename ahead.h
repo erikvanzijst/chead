@@ -1,6 +1,7 @@
 #ifndef AHEAD_H
 #define AHEAD_H
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <glib.h>
 #include "cset.h"

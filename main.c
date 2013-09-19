@@ -16,10 +16,12 @@ Continuation visitor(cset_t *cset) {
  * This function returns the number of SHAs that were read. Consequently, this
  * number indicates the size of the pointer array that is pointed to by **shas.
  */
-int parse_input(FILE *f, char ***shas) {
+aheadstate_t * parse_input(FILE *f) {
 	char line[1024];
+	char **shas;
 	GSList *slist = NULL, *el = NULL;
 	int i;
+	aheadstate_t *state = NULL;
 
 	while(fgets(line, sizeof(line), f)) {
 		if(strlen(g_strchomp(line)) == 0) {
@@ -29,27 +31,28 @@ int parse_input(FILE *f, char ***shas) {
 		}
 		slist = g_slist_append(slist, strdup(line));
 	}
-	*shas = malloc(sizeof(char *) * g_slist_length(slist));
+	shas = malloc(sizeof(char *) * g_slist_length(slist));
 	el = slist;
 	for (i = 0; el != NULL; el = g_slist_next(el)) {
-		(*shas)[i++] = (char *)el->data;
+		shas[i++] = (char *)el->data;
 	}
+	state = aheadstate_new(shas, i);
 	g_slist_free(slist);
-	return i;
+	free(shas);
+	return state;
 }
 
 int main(int argc, char **argv) {
 	GHashTable *inc = g_hash_table_new(g_str_hash, g_str_equal);
-	char **shas;
-	int i = 4;
-	int cnt;
+	GSList *el;
+	aheadstate_t *state = parse_input(stdin);
 
-	cnt = parse_input(stdin, &shas);
-	for (i = 0; i < cnt; i++) {
-		printf("%s\n", shas[i]);
+	g_hash_table_add(inc, state->base->sha);
+	for (el = state->refcounters; el != NULL; el = g_slist_next(el)) {
+		g_hash_table_add(inc, ((refcounter_t *)el->data)->sha);
 	}
 
-	// walk(stdin, visitor, inc);
+	walk(stdin, visitor, inc);
 	g_hash_table_destroy(inc);
 	return 0;
 }
