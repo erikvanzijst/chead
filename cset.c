@@ -3,7 +3,7 @@
 #include <string.h>
 #include "cset.h"
 
-cset_t * new_cset_t(char *sha, char **parent_shas, int parentc) {
+cset_t * cset_t_new(char *sha, char **parent_shas, int parentc) {
 	int i = 0;
 	cset_t *cset = malloc(sizeof(cset_t));
 
@@ -17,7 +17,11 @@ cset_t * new_cset_t(char *sha, char **parent_shas, int parentc) {
 	return cset;
 }
 
-void free_cset_t(cset_t *cset) {
+cset_t * cset_t_dup(cset_t *cset) {
+	return cset_t_new(cset->sha, cset->parents, cset->parentc);
+}
+
+void cset_t_destroy(cset_t *cset) {
 	int i = 0;
 	free(cset->sha);
 	for(; i < cset->parentc; i++) {
@@ -26,6 +30,14 @@ void free_cset_t(cset_t *cset) {
 	free(cset->parents);
 	free(cset);
 	return;
+}
+
+guint cset_t_hash(cset_t *cset) {
+	return g_str_hash(cset->sha);
+}
+
+gboolean cset_t_equal(cset_t *cset1, cset_t *cset2) {
+	return g_str_equal(cset1->sha, cset2->sha);
 }
 
 char * format_cset_t(cset_t *cset) {
