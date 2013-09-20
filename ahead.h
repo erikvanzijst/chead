@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <glib.h>
 #include "cset.h"
+#include "walk.h"
 
 typedef struct refcounter {
 	char *sha;
@@ -18,6 +19,17 @@ typedef struct aheadstate {
 	refcounter_t *base;
 	GSList *refcounters;
 } aheadstate_t;
+
+/*
+ * Computes the ahead and behind numbers for the refs contained in `state`
+ * based on the rev-list provided by `fp`.
+ */
+aheadstate_t * aheadandbehind(FILE *fp, aheadstate_t *state);
+
+/*
+ * Visitor callback used internally by `aheadandbehind`.
+ */
+Continuation aheadvisitor(cset_t *cset, aheadstate_t *state);
 
 /*
  * Allocates a new refcounter_t struct, including its internal hash tables.

@@ -1,6 +1,9 @@
 #ifndef CSET_H
 #define CSET_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <glib.h>
 
 typedef struct cset {

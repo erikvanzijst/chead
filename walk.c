@@ -7,8 +7,8 @@ void GHCopy(gpointer key, gpointer value, GHashTable *dest) {
 	g_hash_table_add(dest, g_strdup(key));
 }
 
-void walk(FILE *fp, Continuation (*visit_cb)(cset_t *cset),
-		  GHashTable *includes) {
+void walk(FILE *fp, Continuation (*visit_cb)(cset_t *cset, void *ctx),
+		  GHashTable *includes, void *ctx) {
 
 	int i;
 	GHashTable *inc = g_hash_table_new_full(g_str_hash, g_str_equal,
@@ -37,7 +37,7 @@ void walk(FILE *fp, Continuation (*visit_cb)(cset_t *cset),
 		}
 		
 		if(g_hash_table_remove(inc, cset.sha)) {
-			if(visit_cb(&cset) == CONT) {
+			if(visit_cb(&cset, ctx) == CONT) {
 				for(i = 0; i < cset.parentc; i++) {
 					g_hash_table_add(inc, g_strdup(cset.parents[i]));
 				}
