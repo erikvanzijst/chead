@@ -20,16 +20,15 @@ typedef struct aheadstate {
 	GSList *refcounters;
 } aheadstate_t;
 
+char * format_ht(GHashTable *ht);
+
 /*
  * Computes the ahead and behind numbers for the refs contained in `state`
  * based on the rev-list provided by `fp`.
  */
 aheadstate_t * aheadandbehind(FILE *fp, aheadstate_t *state);
 
-/*
- * Visitor callback used internally by `aheadandbehind`.
- */
-Continuation aheadvisitor(cset_t *cset, aheadstate_t *state);
+void print_ahead_state(aheadstate_t *state);
 
 /*
  * Allocates a new refcounter_t struct, including its internal hash tables.

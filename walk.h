@@ -8,12 +8,17 @@
 
 typedef enum { CONT, PRUNE } Continuation;
 
-/*
- * Performs a walk over the rev-list provided by *fp.
- * `ctx` provides for the caller to pass context data to the visitor at
- * runtime.
- */
-void walk(FILE *fp, Continuation (*)(cset_t *cset, void *ctx),
-          GHashTable *includes, void *ctx);
+typedef struct walker {
+    FILE *fp;
+    GHashTable *todo;
+    cset_t *cset;
+    char line[1024];
+} walker_t;
+
+walker_t * walker_new(FILE *fp, char **shas, int shaslen);
+
+void walker_destroy(walker_t *state);
+
+cset_t * walker_next(walker_t *walker);
 
 #endif

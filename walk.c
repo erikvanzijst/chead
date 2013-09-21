@@ -3,47 +3,48 @@
 #include <string.h>
 #include "walk.h"
 
-void GHCopy(gpointer key, gpointer value, GHashTable *dest) {
-	g_hash_table_add(dest, g_strdup(key));
+walker_t * walker_new(FILE *fp, char **shas, int shaslen) {
+    int i;
+    walker_t *state = malloc(sizeof(walker_t));
+    
+    state->cset = malloc(sizeof(cset_t));
+    state->cset->parents = malloc(sizeof(char *) * 40);
+    state->cset->parentc = 0;
+    state->fp = fp;
+    state->todo = g_hash_table_new_full(g_str_hash, g_str_equal,
+										g_free, NULL);
+
+    for (i = 0; i < shaslen; i++) {
+        g_hash_table_add(state->todo, g_strdup(shas[i]));
+    }
+    return state;
 }
 
-void walk(FILE *fp, Continuation (*visit_cb)(cset_t *cset, void *ctx),
-		  GHashTable *includes, void *ctx) {
+void walker_destroy(walker_t *state) {
+    g_hash_table_destroy(state->todo);
+    free(state->cset->parents);
+    free(state->cset);
+    free(state);
+}
 
-	int i;
-	GHashTable *inc = g_hash_table_new_full(g_str_hash, g_str_equal,
-											g_free, NULL);
-	
+cset_t * walker_next(walker_t *walker) {
+    cset_t *cset = walker->cset;
 	char *parent = NULL;
-	cset_t cset;
-	char *parents[40];
-	cset.parents = parents;
+    int i;
 
-	char line[1024];
-
-	if(includes && g_hash_table_size(includes)) {
-		g_hash_table_foreach(includes, (GHFunc)GHCopy, inc);
-	}
-	
-	while(fgets(line, sizeof(line), fp)) {
-		if(!g_hash_table_size(inc)) {
-			break;
+    while (g_hash_table_size(walker->todo) &&
+            fgets(walker->line, sizeof(walker->line), walker->fp)) {
+		cset->sha = strtok(walker->line, " \n");
+		for (cset->parentc = 0; (parent = strtok(NULL, " \n")) != NULL;
+				cset->parentc++) {
+			cset->parents[cset->parentc] = parent;
 		}
-
-		cset.sha = strtok(line, " \n");
-		for(cset.parentc = 0; (parent = strtok(NULL, " \n")) != NULL;
-				cset.parentc++) {
-			cset.parents[cset.parentc] = parent;
-		}
-		
-		if(g_hash_table_remove(inc, cset.sha)) {
-			if(visit_cb(&cset, ctx) == CONT) {
-				for(i = 0; i < cset.parentc; i++) {
-					g_hash_table_add(inc, g_strdup(cset.parents[i]));
-				}
+		if (g_hash_table_remove(walker->todo, cset->sha)) {
+			for (i = 0; i < cset->parentc; i++) {
+				g_hash_table_add(walker->todo, g_strdup(cset->parents[i]));
 			}
+            return cset;
 		}
-	}
-	
-	g_hash_table_destroy(inc);
+    }
+    return NULL;
 }

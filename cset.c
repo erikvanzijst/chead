@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "cset.h"
 
 cset_t * cset_t_new(char *sha, char **parent_shas, int parentc) {
