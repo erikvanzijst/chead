@@ -1,12 +1,5 @@
 #include "main.h"
 
-Continuation visitor(cset_t *cset, void *ctx) {
-	cset_t *copy = cset_t_dup(cset);
-	printf("%s\n", format_cset_t(copy));
-	cset_t_destroy(copy);
-	return CONT;
-}
-
 /*
  * Parses the input header. The input header are all lines before the double
  * newline.
@@ -42,8 +35,8 @@ aheadstate_t * parse_input(FILE *f) {
 int main(int argc, char **argv) {
     struct timeval ts;
     double start;
-	aheadstate_t *state = parse_input(stdin);
     
+    aheadstate_t *state = parse_input(stdin);
     gettimeofday(&ts, NULL);
     start = (double)ts.tv_sec + (double)ts.tv_usec / 1000000.0;
     state = aheadandbehind(stdin, state);

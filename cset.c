@@ -30,11 +30,33 @@ void cset_t_destroy(cset_t *cset) {
 }
 
 guint cset_t_hash(cset_t *cset) {
-	return g_str_hash(cset->sha);
+	return sha_hash(cset->sha);
 }
 
 gboolean cset_t_equal(cset_t *cset1, cset_t *cset2) {
 	return g_str_equal(cset1->sha, cset2->sha);
+}
+
+int to_int(char c) {
+    int i = (int)c;
+    if (i >= 48 && i <= 57)
+        return i - 48;
+    if (i >= 65 && i <= 70)
+        return 10 + (i - 65);
+    if (i >= 97 && i <= 102)
+        return 10 + (i - 97);
+    return 0;
+}
+
+guint sha_hash(gconstpointer v) {
+    const signed char *sha;
+    guint32 hash = 0;
+    sha = v;
+    hash |= ((to_int(sha[0]) << 4) | to_int(sha[1])) << 24;
+    hash |= ((to_int(sha[2]) << 4) | to_int(sha[3])) << 16;
+    hash |= ((to_int(sha[4]) << 4) | to_int(sha[5])) << 8;
+    hash |= ((to_int(sha[6]) << 4) | to_int(sha[7]));
+    return hash;
 }
 
 char * format_cset_t(cset_t *cset) {

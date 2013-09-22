@@ -11,7 +11,7 @@ walker_t * walker_new(FILE *fp, char **shas, int shaslen) {
     state->cset->parents = malloc(sizeof(char *) * 40);
     state->cset->parentc = 0;
     state->fp = fp;
-    state->todo = g_hash_table_new_full(g_str_hash, g_str_equal,
+    state->todo = g_hash_table_new_full((guint (*)(gconstpointer v))sha_hash, g_str_equal,
 										g_free, NULL);
 
     for (i = 0; i < shaslen; i++) {

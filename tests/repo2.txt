@@ -5,10 +5,10 @@
 #  |/
 #  a
 #
-b
-d
+bbbbbbbb
+dddddddd
 
-d b c
-b a
-c a
-a
+dddddddd bbbbbbbb cccccccc
+bbbbbbbb aaaaaaaa
+cccccccc aaaaaaaa
+aaaaaaaa

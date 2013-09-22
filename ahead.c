@@ -7,12 +7,12 @@ bool visit(cset_t *cset, aheadstate_t *state);
 
 refcounter_t * refcounter_t_new(char *sha) {
 	refcounter_t *refcounter = malloc(sizeof(refcounter_t));
-	refcounter->nodes = g_hash_table_new_full(g_str_hash,
+	refcounter->nodes = g_hash_table_new_full((guint (*)(gconstpointer v))sha_hash,
 											  g_str_equal,
 										 	  free,
 											  NULL);
 	g_hash_table_add(refcounter->nodes, g_strdup(sha));
-	refcounter->based = g_hash_table_new_full(g_str_hash,
+	refcounter->based = g_hash_table_new_full((guint (*)(gconstpointer v))sha_hash,
 											  g_str_equal,
 											  free,
 											  NULL);

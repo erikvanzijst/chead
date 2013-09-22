@@ -33,6 +33,10 @@ void cset_t_destroy(cset_t *cset);
  */
 guint cset_t_hash(cset_t *cset);
 
+int to_int(char c);
+
+guint sha_hash(gconstpointer v);
+
 /*
  * Compares two instances of cset_t. For use in g_hash_table.
  */

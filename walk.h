@@ -6,8 +6,6 @@
 #include <glib.h>
 #include "cset.h"
 
-typedef enum { CONT, PRUNE } Continuation;
-
 typedef struct walker {
     FILE *fp;
     GHashTable *todo;
